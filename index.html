@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>University Student ML Lab Pro | Universitet talabalarini tasniflash va klasterlash</title>
+  <meta name="description" content="KNN, qaror daraxti va K-means algoritmlari bilan universitet talabalarini tasniflash va klasterlash bo'yicha interaktiv laboratoriya ishi.">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Asosiy mazmunga o'tish</a>
+<canvas id="ambient" aria-hidden="true"></canvas>
+
+<aside class="sidebar" id="sidebar" aria-label="Asosiy navigatsiya">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">ML</span>
+    <div><strong>ML Lab Pro</strong><small>Interaktiv laboratoriya</small></div>
+  </div>
+  <nav class="nav">
+    <a href="#home" class="active"><span class="n">1</span> Bosh sahifa</a>
+    <a href="#data"><span class="n">2</span> Talabalar bazasi</a>
+    <a href="#knn"><span class="n">3</span> KNN tasniflash</a>
+    <a href="#tree"><span class="n">4</span> Qaror daraxti</a>
+    <a href="#kmeans"><span class="n">5</span> K-means klasterlash</a>
+    <a href="#chart"><span class="n">6</span> Interaktiv grafik</a>
+    <a href="#verify"><span class="n">7</span> Hisob-kitoblarni tekshirish</a>
+    <a href="#about"><span class="n">8</span> Loyiha haqida</a>
+  </nav>
+  <div class="side-foot">
+    <span>Talaba: Sadullayev Jaxongir</span>
+    <button class="btn ghost" id="btnHelp" type="button">Atamalar izohi</button>
+  </div>
+</aside>
+
+<div class="shell">
+  <header class="topbar">
+    <button class="btn icon menu-btn" id="menuToggle" type="button" aria-expanded="false" aria-controls="sidebar" aria-label="Menyuni ochish yoki yopish">☰</button>
+    <div class="top-title">
+      <strong>Universitet talabalarini tasniflash va klasterlash</strong>
+      <small>Fan: Sun'iy intellekt texnologiyalari &middot; Laboratoriya ishi</small>
+    </div>
+    <button class="btn" id="themeToggle" type="button" aria-pressed="false"><span aria-hidden="true">◐</span> <span class="tl">Yorug' rejim</span></button>
+  </header>
+
+  <main id="main">
+    <!-- 1. BOSH SAHIFA -->
+    <section id="home" class="reveal" aria-labelledby="h-home">
+      <div class="hero card">
+        <div class="hero-text">
+          <p class="eyebrow">Interaktiv mashinaviy o'rganish laboratoriyasi</p>
+          <h1 id="h-home">Universitet talabalarini tasniflash va klasterlash</h1>
+          <p class="tagline">Ma'lumotlardan bilim sari — uch algoritm, bitta interaktiv laboratoriya.</p>
+          <ul class="meta">
+            <li><b>Talaba:</b> Sadullayev Jaxongir</li>
+            <li><b>Fan:</b> Sun'iy intellekt texnologiyalari</li>
+            <li><b>Mavzu:</b> Universitet talabalarini tasniflash va klasterlash</li>
+            <li><b>Loyiha:</b> Interaktiv mashinaviy o'rganish laboratoriyasi</li>
+          </ul>
+        </div>
+        <div class="hero-3d" aria-hidden="true">
+          <div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div>
+          <div class="cube"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="dot d4"></span>
+        </div>
+      </div>
+
+      <h2 class="visually-hidden">Asosiy ko'rsatkichlar</h2>
+      <div class="stats" aria-live="polite">
+        <div class="stat tilt"><span class="lbl">Jami talabalar</span><strong id="statTotal">20</strong></div>
+        <div class="stat tilt"><span class="lbl">Faol talabalar</span><strong id="statActive">7</strong></div>
+        <div class="stat tilt"><span class="lbl">Oddiy talabalar</span><strong id="statOrdinary">13</strong></div>
+        <div class="stat tilt"><span class="lbl">KNN bashorati</span><strong id="statKnn">—</strong></div>
+        <div class="stat tilt"><span class="lbl">Qaror daraxti bashorati</span><strong id="statTree">—</strong></div>
+        <div class="stat tilt"><span class="lbl">K-means iteratsiyasi</span><strong id="statIter">0</strong></div>
+        <div class="stat tilt"><span class="lbl">Joriy J (inertia)</span><strong id="statJ">—</strong></div>
+        <div class="stat tilt"><span class="lbl">Konvergensiya</span><strong id="statConv" class="small">Yo'q</strong></div>
+      </div>
+      <ul class="status-row" aria-label="Algoritm holatlari">
+        <li>KNN: <b id="statusKnn">tayyor</b></li>
+        <li>Decision Tree: <b id="statusTree">tayyor</b></li>
+        <li>K-means: <b id="statusKmeans">0-iteratsiya</b></li>
+      </ul>
+
+      <div class="grid-2">
+        <div class="card" id="evaluate">
+          <h2>Yangi talabani baholash</h2>
+          <p class="hint">Qiymatni o'zgartiring: KNN, qaror daraxti yo'li, grafikdagi nuqta va qo'lda tekshirish darhol yangilanadi. Yangi talaba K-means ma'lumotlariga qo'shilmaydi.</p>
+          <div class="profiles" role="group" aria-label="Tayyor profillar">
+            <button type="button" class="btn" data-profile="active">Faol talaba (80; 85)</button>
+            <button type="button" class="btn" data-profile="ordinary">Oddiy talaba (55; 50)</button>
+            <button type="button" class="btn" data-profile="border">Chegaraviy talaba (72; 75)</button>
+          </div>
+          <div class="field">
+            <label for="inputScore">O'rtacha ball (0–100)</label>
+            <input id="inputScore" class="big-num" type="number" min="0" max="100" step="1" inputmode="decimal" value="80" aria-describedby="msgScore">
+            <input id="rangeScore" class="range" type="range" min="0" max="100" step="1" value="80" aria-label="O'rtacha ball slayderi">
+            <div class="progress" aria-hidden="true"><span id="barScore"></span></div>
+            <p id="msgScore" class="field-msg good" role="status">To'g'ri qiymat</p>
+          </div>
+          <div class="field">
+            <label for="inputAtt">Darsga qatnashish va topshiriqlarni bajarish (%)</label>
+            <input id="inputAtt" class="big-num" type="number" min="0" max="100" step="1" inputmode="decimal" value="85" aria-describedby="msgAtt">
+            <input id="rangeAtt" class="range" type="range" min="0" max="100" step="1" value="85" aria-label="Qatnashish slayderi">
+            <div class="progress alt" aria-hidden="true"><span id="barAtt"></span></div>
+            <p id="msgAtt" class="field-msg good" role="status">To'g'ri qiymat</p>
+          </div>
+          <p id="currentStudent" class="current" aria-live="polite"></p>
+          <p id="nearestCenter" class="current soft" aria-live="polite"></p>
+        </div>
+        <div class="card" id="normCard">
+          <h2>Min-Max normalizatsiya</h2>
+          <details class="explain" open>
+            <summary>Algoritm qanday ishlaydi?</summary>
+            <p><b>Nega kerak?</b> Ball va qatnashish bir xil 0–100 oraliqda bo'lsa ham, ularning haqiqiy tarqalishi har xil (ball 40–96, qatnashish 45–96). Masofa hisoblashda katta diapazonli parametr ustun kelmasligi uchun ikkalasi 0–1 oralig'iga keltiriladi.</p>
+            <p class="formula"><i>z</i> = (<i>x</i> &minus; <i>x</i><sub>min</sub>) / (<i>x</i><sub>max</sub> &minus; <i>x</i><sub>min</sub>)</p>
+            <p><b>Min va max</b> har parametr uchun alohida, faqat 20 ta o'quv talabadan olinadi: ball 40 va 96, qatnashish 45 va 96. <b>Misol:</b> T9 uchun ball = (73 &minus; 40) / (96 &minus; 40) = 0.5893; qatnashish = (45 &minus; 45) / (96 &minus; 45) = 0.</p>
+            <p><b>Nolga bo'lishdan saqlanish:</b> agar <i>x</i><sub>max</sub> = <i>x</i><sub>min</sub> bo'lsa, <i>z</i> = 0 deb olinadi. Yangi talaba qiymati diapazondan tashqarida bo'lsa (masalan, ball 0), <i>z</i> manfiy bo'lishi mumkin va kesilmaydi. Sinf (Oddiy/Faol) normalizatsiya qilinmaydi.</p>
+          </details>
+          <div id="normBox" class="table-scroll"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. TALABALAR BAZASI -->
+    <section id="data" class="reveal" aria-labelledby="h-data">
+      <div class="card">
+        <h2 id="h-data">Talabalar ma'lumotlari</h2>
+        <p class="hint">O'quv maqsadidagi namunaviy dataset: 20 talaba (Oddiy 13, Faol 7). Ball: min 40, max 96. Qatnashish: min 45, max 96. Sinf yorliqlari faqat KNN va qaror daraxti uchun ishlatiladi, K-means ularga tayanmaydi. Filtr va saralash o'quv ma'lumotlarini o'zgartirmaydi.</p>
+        <div class="toolbar">
+          <label class="inline">ID qidiruv <input id="searchId" type="search" placeholder="Masalan: T15" autocomplete="off"></label>
+          <label class="inline">Sinf
+            <select id="filterClass"><option value="all">Hammasi</option><option value="Oddiy">Oddiy</option><option value="Faol">Faol</option></select></label>
+          <label class="inline">Klaster
+            <select id="filterCluster"><option value="all">Hammasi</option><option value="0">C1</option><option value="1">C2</option><option value="2">C3</option></select></label>
+          <button class="btn" id="sortScore" type="button">Ball bo'yicha saralash</button>
+          <button class="btn" id="sortAtt" type="button">Qatnashish bo'yicha saralash</button>
+          <button class="btn" id="btnCopyTable" type="button">Natijalarni nusxalash</button>
+          <button class="btn primary" id="btnCsv" type="button">CSV yuklab olish</button>
+        </div>
+        <p id="tableCount" class="hint" aria-live="polite"></p>
+        <div class="table-scroll">
+          <table class="data">
+            <caption class="visually-hidden">Talabalar jadvali</caption>
+            <thead><tr><th scope="col">ID</th><th scope="col">O'rtacha ball</th><th scope="col">Qatnashish (%)</th><th scope="col">Sinf</th><th scope="col">Normallashtirilgan ball</th><th scope="col">Normallashtirilgan qatnashish</th><th scope="col">Joriy klaster</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. KNN -->
+    <section id="knn" class="reveal" aria-labelledby="h-knn">
+      <div class="card">
+        <h2 id="h-knn">Eng yaqin qo'shnilar (KNN, k = 3)</h2>
+        <details class="explain">
+          <summary>Algoritm qanday ishlaydi?</summary>
+          <p><b>KNN (k eng yaqin qo'shni)</b> nazoratli o'rganish algoritmi: sinflari oldindan ma'lum talabalar asosida yangi talaba sinfi bashorat qilinadi.</p>
+          <p>1) Yangi talaba normalizatsiya qilinadi. 2) Barcha 20 talabagacha Evklid masofasi hisoblanadi:</p>
+          <p class="formula"><i>d</i> = &radic;( (<i>a</i><sub>1</sub> &minus; <i>b</i><sub>1</sub>)<sup>2</sup> + (<i>a</i><sub>2</sub> &minus; <i>b</i><sub>2</sub>)<sup>2</sup> )</p>
+          <p>3) Masofalar o'sish tartibida saralanadi (teng bo'lsa ID bo'yicha). 4) Eng yaqin <i>k</i> = 3 talaba olinadi. 5) Ularning sinflari ovozga qo'yiladi, ko'p ovoz olgan sinf bashorat bo'ladi.</p>
+        </details>
+        <div class="grid-2 knn-top">
+          <div id="knnResult" aria-live="polite"></div>
+          <div id="knnNeighbors" class="neighbors"></div>
+        </div>
+        <details class="explain"><summary>Hisoblashni tushuntirish</summary><div id="knnExplainSteps"></div></details>
+        <h3>Barcha 20 talabagacha masofa (saralangan)</h3>
+        <div class="table-scroll">
+          <table class="data">
+            <thead><tr><th scope="col">Tartib</th><th scope="col">ID</th><th scope="col">Ball</th><th scope="col">Qatnashish</th><th scope="col">Sinf</th><th scope="col">Normalizatsiya</th><th scope="col">Masofa</th><th scope="col">Tanlov</th></tr></thead>
+            <tbody id="knnTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. QAROR DARAXTI -->
+    <section id="tree" class="reveal" aria-labelledby="h-tree">
+      <div class="card">
+        <h2 id="h-tree">Qaror daraxti (Gini, maxDepth = 2)</h2>
+        <details class="explain">
+          <summary>Algoritm qanday ishlaydi?</summary>
+          <p><b>Qaror daraxti</b> ma'lumotlarni «ball <i>≤</i> chegara» kabi savollar bilan bo'ladi. Eng yuqori tugun <b>ildiz</b>, savol beruvchi tugunlar <b>tugun</b>, yakuniy javob <b>barg</b> deyiladi.</p>
+          <p class="formula"><i>G</i> = 1 &minus; &sum; <i>p</i><sub>c</sub><sup>2</sup> &nbsp;&nbsp; (Gini: tugun aralashmaligi, 0 = toza)</p>
+          <p class="formula"><i>G</i><sub>split</sub> = (<i>n</i><sub>L</sub>/<i>n</i>)&middot;<i>G</i><sub>L</sub> + (<i>n</i><sub>R</sub>/<i>n</i>)&middot;<i>G</i><sub>R</sub> &nbsp;&nbsp; (vaznli Gini)</p>
+          <p><b>Nomzod chegara:</b> parametrning takrorlanmagan saralangan qiymatlarining yonma-yon o'rta nuqtalari. Eng kichik vaznli Gini beradigan nomzod tanlanadi (teng bo'lsa avval ball, keyin qatnashish, so'ng kichikroq chegara). <b>maxDepth = 2</b>: daraxt chuqurligi 2 dan oshmaydi. To'xtash: bitta sinf qolsa, chuqurlik chegarasiga yetilsa, yaroqli ajratish bo'lmasa yoki Gini yaxshilanmasa.</p>
+        </details>
+        <p id="treeInfo" class="current soft"></p>
+        <div class="tree-scroll" id="treeWrap" tabindex="0" aria-label="Qaror daraxti (gorizontal aylantirish mumkin)"></div>
+        <p id="treePathText" class="current" aria-live="polite"></p>
+        <h3>Ildizdagi nomzod shartlar</h3>
+        <div class="table-scroll tall">
+          <table class="data">
+            <thead><tr><th scope="col">Parametr</th><th scope="col">Chegara</th><th scope="col">Chap / o'ng soni</th><th scope="col">Chap taqsimot</th><th scope="col">O'ng taqsimot</th><th scope="col">G chap</th><th scope="col">G o'ng</th><th scope="col">Vaznli Gini</th><th scope="col">Natija</th></tr></thead>
+            <tbody id="treeCandBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. K-MEANS -->
+    <section id="kmeans" class="reveal" aria-labelledby="h-km">
+      <div class="card">
+        <h2 id="h-km">Klasterlash (K-means, q = 3)</h2>
+        <details class="explain">
+          <summary>Algoritm qanday ishlaydi?</summary>
+          <p><b>K-means</b> nazoratsiz o'rganish: sinf yorlig'i ishlatilmaydi, 20 talaba faqat normalizatsiyalangan koordinatalari bo'yicha 3 ta klasterga ajratiladi. <b>Klaster</b> koordinatalar yaqinligi bo'yicha guruh, <b>sinf</b> esa oldindan berilgan yorliq; C1 = Oddiy deb tenglashtirilmaydi.</p>
+          <p>1) Boshlang'ich markazlar: C1 = T1, C2 = T15, C3 = T20. 2) Har talaba eng yaqin markazga biriktiriladi (kvadrat Evklid masofa). 3) Markaz yangilanadi:</p>
+          <p class="formula"><i>&mu;</i><sub>r</sub> = (1/|<i>C</i><sub>r</sub>|) &sum; <i>z</i><sub>i</sub></p>
+          <p>4) <b>Inertia</b> (yangilangan markazlar bilan): <span class="formula inline-f"><i>J</i> = &sum; &Vert;<i>z</i><sub>i</sub> &minus; <i>&mu;</i><sub>c(i)</sub>&Vert;<sup>2</sup></span>. 5) <b>Konvergensiya</b>: biriktirishlar o'zgarmay qolsa yoki 100 iteratsiyaga yetilsa jarayon to'xtaydi. Bo'sh klasterda eski markaz saqlanadi.</p>
+        </details>
+        <div class="km-head">
+          <div class="iter-box"><span class="lbl">Iteratsiya</span><strong id="kmIter">0</strong></div>
+          <div class="km-btns" role="group" aria-label="K-means boshqaruvi">
+            <button class="btn primary" id="btnStep" type="button">Keyingi qadam</button>
+            <button class="btn" id="btnAuto" type="button">Avtomatik yakunlash</button>
+            <button class="btn" id="btnStop" type="button" disabled>To'xtatish</button>
+            <button class="btn" id="btnReset" type="button">Qayta boshlash</button>
+          </div>
+        </div>
+        <p id="kmStatus" class="current soft" role="status" aria-live="polite"></p>
+        <div class="grid-2">
+          <div><div id="kmInit"></div><div id="kmDemo"></div></div>
+          <div class="j-box"><h4>J (inertia) o'zgarishi</h4><canvas id="jChart" height="150" role="img" aria-label="J qiymatlari iteratsiyalar bo'yicha"></canvas></div>
+        </div>
+        <div id="kmLatest"></div>
+        <div id="kmHistory"></div>
+      </div>
+    </section>
+
+    <!-- 6. GRAFIK -->
+    <section id="chart" class="reveal" aria-labelledby="h-chart">
+      <div class="card">
+        <h2 id="h-chart">Interaktiv grafik</h2>
+        <div class="toolbar">
+          <div class="seg" role="group" aria-label="Grafik rejimi">
+            <button class="btn" type="button" data-mode="raw" aria-pressed="true">Asl qiymatlar (0–100)</button>
+            <button class="btn" type="button" data-mode="norm" aria-pressed="false">Normalizatsiyalangan</button>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="mainChart" role="img" aria-label="Talabalar tarqoq grafigi: X o'rtacha ball, Y qatnashish"></canvas>
+          <div id="tooltip" class="tooltip" hidden role="tooltip"></div>
+        </div>
+        <ul class="legend">
+          <li><span class="mk circ"></span> Oddiy (yumaloq)</li>
+          <li><span class="mk tri"></span> Faol (uchburchak)</li>
+          <li><span class="mk dia"></span> Klaster markazi C1–C3 (romb)</li>
+          <li><span class="mk star"></span> Yangi talaba (yulduzcha)</li>
+          <li><span class="mk ring"></span> KNN 3 qo'shni (neon halqa, punktir chiziq)</li>
+          <li><span class="sw cl1"></span> C1 <span class="sw cl2"></span> C2 <span class="sw cl3"></span> C3</li>
+        </ul>
+        <p id="chartText" class="current soft" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- 7. TEKSHIRISH -->
+    <section id="verify" class="reveal" aria-labelledby="h-verify">
+      <div class="verify-head">
+        <h2 id="h-verify">Qo'lda tekshirish hisob-kitoblari</h2>
+        <button class="btn primary" id="btnCopyVerify" type="button">Hisob-kitobni nusxalash</button>
+      </div>
+      <p class="hint">Har kartochkada qiymatlar xom ma'lumotdan alohida arifmetika bilan qayta hisoblanadi va dasturning natijasi bilan <b>&epsilon; = 1e-10</b> aniqlikda solishtiriladi. «Mos keldi» yozuvi faqat haqiqiy mos kelishda chiqadi.</p>
+      <div class="verify-grid">
+        <article class="card calc-card" id="verifyKnn"></article>
+        <article class="card calc-card" id="verifyTree"></article>
+        <article class="card calc-card" id="verifyKm"></article>
+      </div>
+    </section>
+
+    <!-- 8. HAQIDA -->
+    <section id="about" class="reveal" aria-labelledby="h-about">
+      <div class="card">
+        <h2 id="h-about">Loyiha haqida</h2>
+        <p><b>Talaba:</b> Sadullayev Jaxongir &middot; <b>Fan:</b> Sun'iy intellekt texnologiyalari &middot; <b>Ish turi:</b> Laboratoriya ishi.</p>
+        <p>Mavzu: Do'kon mijozlarini tasniflash va klasterlash topshirig'i universitet talabalariga moslashtirilgan. Mijoz &rarr; talaba; xarid summasi &rarr; o'rtacha akademik ball; xaridlar soni &rarr; darsga qatnashish va topshiriqlarni bajarish ko'rsatkichi; mijoz sinfi &rarr; talaba sinfi; mijoz klasteri &rarr; talaba klasteri.</p>
+        <h3>Talqin</h3>
+        <ul>
+          <li><b>KNN:</b> yangi talabaning oldindan berilgan sinflar asosidagi bashorati.</li>
+          <li><b>Qaror daraxti:</b> o'quv ma'lumotlaridan qurilgan qaror qoidalari bilan bashorat.</li>
+          <li><b>K-means:</b> sinflarsiz 20 talabani koordinatalar bo'yicha guruhlash.</li>
+          <li>KNN va daraxt natijalari farq qilsa, ikkalasi ham alohida to'g'ri natija sifatida ko'rsatiladi.</li>
+        </ul>
+        <p class="hint">Cheklov: o'qituvchining namuna sayti va PDF topshirig'i bu loyiha yaratilayotganda tekshirilmadi; dizayn nusxalanmagan, topshiriq matni asosida mustaqil yaratilgan. Dataset o'quv maqsadidagi namunaviy ma'lumot.</p>
+        <p>GitHub: <a href="https://github.com/dasturland/SI_TOP.git" target="_blank" rel="noopener noreferrer">github.com/dasturland/SI_TOP</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">© 2026 Sadullayev Jaxongir. Barcha huquqlar himoyalangan.</footer>
+</div>
+
+<dialog id="helpDialog" aria-labelledby="helpTitle">
+  <h2 id="helpTitle">Atamalar izohi</h2>
+  <dl>
+    <dt>KNN</dt><dd>Yangi talabaga eng o'xshash 3 ta talabani topib, ko'pchilik sinfini bashorat qiladigan algoritm.</dd>
+    <dt>Evklid masofasi</dt><dd>Ikki nuqta orasidagi to'g'ri chiziq masofasi.</dd>
+    <dt>Gini indeksi</dt><dd>Guruhdagi sinflar aralashmaligi o'lchovi: 0 bo'lsa guruh toza.</dd>
+    <dt>K-means</dt><dd>Sinflarsiz, talabalarni yaqinligi bo'yicha 3 klasterga ajratadigan algoritm.</dd>
+    <dt>Inertia (J)</dt><dd>Talabalarning o'z klaster markazigacha kvadrat masofalari yig'indisi; kichikroq bo'lsa klasterlar ixchamroq.</dd>
+    <dt>JavaScript</dt><dd>Brauzerda ishlaydigan dasturlash tili. Barcha hisoblar shu tilda noldan yozilgan.</dd>
+  </dl>
+  <button class="btn primary" id="btnHelpClose" type="button">Yopish</button>
+</dialog>
+
+<div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+</body>
+</html>
